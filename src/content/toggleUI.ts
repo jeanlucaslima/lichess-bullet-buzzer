@@ -1,8 +1,17 @@
 import { CLOCK_BOTTOM_CONTAINER } from './selectors';
 
 const BUTTON_ID = 'lichess-buzzer-toggle';
+const STORAGE_KEY = 'lichess-buzzer-enabled';
 
-let isEnabled = false;
+function loadState(): boolean {
+  return localStorage.getItem(STORAGE_KEY) === 'true';
+}
+
+function saveState(enabled: boolean): void {
+  localStorage.setItem(STORAGE_KEY, String(enabled));
+}
+
+let isEnabled = loadState();
 let onToggleCallback: ((enabled: boolean) => void) | null = null;
 
 export function injectToggleButton(onToggle: (enabled: boolean) => void): boolean {
@@ -50,11 +59,18 @@ export function injectToggleButton(onToggle: (enabled: boolean) => void): boolea
   }
 
   clockContainer.appendChild(button);
+
+  // Auto-start if state was restored as enabled
+  if (isEnabled) {
+    onToggle(true);
+  }
+
   return true;
 }
 
 function handleToggle(): void {
   isEnabled = !isEnabled;
+  saveState(isEnabled);
   updateButtonAppearance();
   onToggleCallback?.(isEnabled);
 }
