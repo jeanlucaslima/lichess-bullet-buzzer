@@ -3,8 +3,6 @@ import { startTurnObserver, stopTurnObserver } from './turnDetector';
 import { injectToggleButton, removeToggleButton, isToggleEnabled } from './toggleUI';
 import { CLOCK_BOTTOM_CONTAINER } from './selectors';
 
-console.log('[lichess-buzzer] loaded');
-
 let isInitialized = false;
 
 function handleTurnStart(): void {
@@ -30,7 +28,6 @@ function tryInjectUI(): boolean {
   const injected = injectToggleButton(handleToggle);
   if (injected && !isInitialized) {
     isInitialized = true;
-    console.log('[lichess-buzzer] UI injected');
   }
   return injected;
 }

@@ -1,4 +1,4 @@
-import { CLOCK_BOTTOM, CLOCK_RUNNING_CLASS } from './selectors';
+import { CLOCK_BOTTOM_CONTAINER, CLOCK_RUNNING_CLASS } from './selectors';
 
 type TurnCallback = () => void;
 
@@ -11,9 +11,10 @@ export function startTurnObserver(
 ): void {
   stopTurnObserver();
 
+  const clockContainer = document.querySelector(CLOCK_BOTTOM_CONTAINER);
+
   const checkTurn = () => {
-    const clock = document.querySelector(CLOCK_BOTTOM);
-    const isPlayerTurn = clock?.classList.contains(CLOCK_RUNNING_CLASS) ?? false;
+    const isPlayerTurn = clockContainer?.classList.contains(CLOCK_RUNNING_CLASS) ?? false;
 
     if (isPlayerTurn && !wasPlayerTurn) {
       onTurnStart();
@@ -26,12 +27,10 @@ export function startTurnObserver(
 
   observer = new MutationObserver(checkTurn);
 
-  const targetNode = document.querySelector('.rclock-bottom');
-  if (targetNode) {
-    observer.observe(targetNode, {
+  if (clockContainer) {
+    observer.observe(clockContainer, {
       attributes: true,
       attributeFilter: ['class'],
-      subtree: true,
     });
     // Check initial state
     checkTurn();
