@@ -20,14 +20,14 @@ describe("topBarToggle", () => {
     removeTopBarToggle();
   });
 
-  it("injects the toggle as a sibling preceding the notify bell", () => {
+  it("injects the toggle as a sibling preceding the bell's wrapper", () => {
     const ok = injectTopBarToggle(true);
     expect(ok).toBe(true);
 
     const toggle = document.getElementById(TOGGLE_ID);
     const bell = document.getElementById("notify-toggle");
     expect(toggle).not.toBeNull();
-    expect(toggle?.nextElementSibling).toBe(bell);
+    expect(toggle?.nextElementSibling).toBe(bell?.parentElement);
   });
 
   it("does not double-inject on repeated calls", () => {
