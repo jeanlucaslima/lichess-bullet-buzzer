@@ -4,26 +4,27 @@ type EndCallback = () => void;
 
 let observer: MutationObserver | null = null;
 let onEnd: EndCallback | null = null;
+let bannerWasPresent = false;
 
 function bannerPresent(): boolean {
   return document.querySelector(GAME_END_BANNER) !== null;
 }
 
+function check(): void {
+  const present = bannerPresent();
+  if (present && !bannerWasPresent) {
+    onEnd?.();
+  }
+  bannerWasPresent = present;
+}
+
 export function startGameEndObserver(callback: EndCallback): void {
   stopGameEndObserver();
   onEnd = callback;
+  bannerWasPresent = false;
+  check();
 
-  // If the banner is already present when we start, fire immediately.
-  if (bannerPresent()) {
-    onEnd();
-    return;
-  }
-
-  observer = new MutationObserver(() => {
-    if (bannerPresent()) {
-      onEnd?.();
-    }
-  });
+  observer = new MutationObserver(check);
   observer.observe(document.body, { childList: true, subtree: true });
 }
 
@@ -31,4 +32,5 @@ export function stopGameEndObserver(): void {
   observer?.disconnect();
   observer = null;
   onEnd = null;
+  bannerWasPresent = false;
 }
