@@ -18,13 +18,23 @@ function check(): void {
   bannerWasPresent = present;
 }
 
+let scheduled = false;
+function scheduledCheck(): void {
+  if (scheduled) return;
+  scheduled = true;
+  requestAnimationFrame(() => {
+    scheduled = false;
+    check();
+  });
+}
+
 export function startGameEndObserver(callback: EndCallback): void {
   stopGameEndObserver();
   onEnd = callback;
   bannerWasPresent = false;
   check();
 
-  observer = new MutationObserver(check);
+  observer = new MutationObserver(scheduledCheck);
   observer.observe(document.body, { childList: true, subtree: true });
 }
 

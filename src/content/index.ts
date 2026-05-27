@@ -34,9 +34,9 @@ function applyEnabledState(enabled: boolean): void {
 }
 
 function setupPageObserver(): void {
-  const pageObserver = new MutationObserver(() => {
-    // Top-bar toggle should be present on every lichess page; re-inject
-    // on any mutation in case lichess SPA-navigated and re-rendered.
+  let scheduled = false;
+  const run = (): void => {
+    scheduled = false;
     injectTopBarToggle();
 
     const clockExists = document.querySelector(CLOCK_BOTTOM_CONTAINER) !== null;
@@ -46,6 +46,12 @@ function setupPageObserver(): void {
       stopTurnObserver();
       cancelBeepSequence();
     }
+  };
+
+  const pageObserver = new MutationObserver(() => {
+    if (scheduled) return;
+    scheduled = true;
+    requestAnimationFrame(run);
   });
 
   pageObserver.observe(document.body, {
