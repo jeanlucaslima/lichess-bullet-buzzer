@@ -43,6 +43,19 @@ describe("topBarToggle", () => {
     expect(injectTopBarToggle(true)).toBe(false);
   });
 
+  it("re-injects after the top bar is removed and re-added", () => {
+    injectTopBarToggle(true);
+    expect(document.getElementById(TOGGLE_ID)).not.toBeNull();
+
+    // Simulate lichess SPA re-render of the entire top bar.
+    document.body.innerHTML = topbar;
+    expect(document.getElementById(TOGGLE_ID)).toBeNull();
+
+    const ok = injectTopBarToggle(true);
+    expect(ok).toBe(true);
+    expect(document.getElementById(TOGGLE_ID)).not.toBeNull();
+  });
+
   it("reflects enabled state in textContent and color", () => {
     injectTopBarToggle(true);
     let toggle = document.getElementById(TOGGLE_ID) as HTMLElement;

@@ -34,19 +34,15 @@ function applyEnabledState(enabled: boolean): void {
   }
 }
 
-function tryInjectUI(): void {
-  // Legacy in-clock toggle (to be removed in a follow-up commit).
-  injectToggleButton(applyEnabledState);
-  // New top-bar toggle.
-  injectTopBarToggle();
-}
-
 function setupPageObserver(): void {
   const pageObserver = new MutationObserver(() => {
-    const clockExists = document.querySelector(CLOCK_BOTTOM_CONTAINER) !== null;
+    // Top-bar toggle should be present on every lichess page; re-inject
+    // on any mutation in case lichess SPA-navigated and re-rendered.
+    injectTopBarToggle();
 
+    const clockExists = document.querySelector(CLOCK_BOTTOM_CONTAINER) !== null;
     if (clockExists) {
-      tryInjectUI();
+      injectToggleButton();
       ensureTurnObserver();
     } else {
       removeToggleButton();
@@ -64,7 +60,8 @@ function setupPageObserver(): void {
 function init(): void {
   initAudio();
   subscribeToggle(applyEnabledState);
-  tryInjectUI();
+  injectTopBarToggle();
+  injectToggleButton();
   if (getToggleEnabled()) {
     applyEnabledState(true);
   }
