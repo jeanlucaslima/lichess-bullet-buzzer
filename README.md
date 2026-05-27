@@ -25,6 +25,15 @@ Vite bundles `src/content/index.ts` into `dist/content.js` and copies the manife
 4. Click **Load unpacked** and select the `dist/` folder
 5. Visit lichess.org and start a game
 
+## Testing
+
+```bash
+npm test           # run once
+npm run test:watch # watch mode
+```
+
+Tests live in `tests/` (unit + dom). DOM tests declare `// @vitest-environment happy-dom` at the top.
+
 ## Project Structure
 
 - `src/content/index.ts` — content script injected into lichess.org
