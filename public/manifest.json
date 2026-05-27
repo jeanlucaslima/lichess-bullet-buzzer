@@ -18,7 +18,8 @@
       "resources": [
         "beep1.wav",
         "beep2.wav",
-        "beep3.wav"
+        "beep3.wav",
+        "end.wav"
       ],
       "matches": [
         "https://lichess.org/*"
