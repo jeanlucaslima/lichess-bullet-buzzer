@@ -1,35 +1,23 @@
 import { CLOCK_BOTTOM_CONTAINER } from './selectors';
+import { getToggleEnabled, setToggleEnabled, subscribeToggle } from './toggleState';
 
 const BUTTON_ID = 'lichess-buzzer-toggle';
-const STORAGE_KEY = 'lichess-buzzer-enabled';
 
-function loadState(): boolean {
-  return localStorage.getItem(STORAGE_KEY) === 'true';
+let unsubscribe: (() => void) | null = null;
+
+function paint(button: HTMLElement, enabled: boolean): void {
+  button.textContent = enabled ? '🔔' : '🔕';
+  button.style.backgroundColor = enabled ? '#629924' : '#666';
 }
 
-function saveState(enabled: boolean): void {
-  localStorage.setItem(STORAGE_KEY, String(enabled));
-}
-
-let isEnabled = loadState();
-let onToggleCallback: ((enabled: boolean) => void) | null = null;
-
-export function injectToggleButton(onToggle: (enabled: boolean) => void): boolean {
-  // Don't inject if already exists
-  if (document.getElementById(BUTTON_ID)) {
-    return true;
-  }
+export function injectToggleButton(_onToggle?: (enabled: boolean) => void): boolean {
+  if (document.getElementById(BUTTON_ID)) return true;
 
   const clockContainer = document.querySelector(CLOCK_BOTTOM_CONTAINER);
-  if (!clockContainer) {
-    return false;
-  }
-
-  onToggleCallback = onToggle;
+  if (!clockContainer) return false;
 
   const button = document.createElement('button');
   button.id = BUTTON_ID;
-  button.textContent = isEnabled ? '🔔' : '🔕';
   button.title = 'Toggle bullet buzzer';
 
   Object.assign(button.style, {
@@ -46,13 +34,14 @@ export function injectToggleButton(onToggle: (enabled: boolean) => void): boolea
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: isEnabled ? '#629924' : '#666',
     zIndex: '10',
   });
+  paint(button, getToggleEnabled());
 
-  button.addEventListener('click', handleToggle);
+  button.addEventListener('click', () => {
+    setToggleEnabled(!getToggleEnabled());
+  });
 
-  // Ensure container has relative positioning for absolute child
   const containerEl = clockContainer as HTMLElement;
   if (getComputedStyle(containerEl).position === 'static') {
     containerEl.style.position = 'relative';
@@ -60,37 +49,21 @@ export function injectToggleButton(onToggle: (enabled: boolean) => void): boolea
 
   clockContainer.appendChild(button);
 
-  // Auto-start if state was restored as enabled
-  if (isEnabled) {
-    onToggle(true);
-  }
+  unsubscribe?.();
+  unsubscribe = subscribeToggle((v) => {
+    const el = document.getElementById(BUTTON_ID);
+    if (el) paint(el as HTMLElement, v);
+  });
 
   return true;
 }
 
-function handleToggle(): void {
-  isEnabled = !isEnabled;
-  saveState(isEnabled);
-  updateButtonAppearance();
-  onToggleCallback?.(isEnabled);
-}
-
-function updateButtonAppearance(): void {
-  const button = document.getElementById(BUTTON_ID);
-  if (button) {
-    button.textContent = isEnabled ? '🔔' : '🔕';
-    (button as HTMLElement).style.backgroundColor = isEnabled ? '#629924' : '#666';
-  }
-}
-
 export function removeToggleButton(): void {
-  const button = document.getElementById(BUTTON_ID);
-  if (button) {
-    button.removeEventListener('click', handleToggle);
-    button.remove();
-  }
+  document.getElementById(BUTTON_ID)?.remove();
+  unsubscribe?.();
+  unsubscribe = null;
 }
 
 export function isToggleEnabled(): boolean {
-  return isEnabled;
+  return getToggleEnabled();
 }

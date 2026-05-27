@@ -1,6 +1,9 @@
 import { NOTIFY_BELL } from './selectors';
+import { getToggleEnabled, setToggleEnabled, subscribeToggle } from './toggleState';
 
 export const TOGGLE_ID = 'lichess-buzzer-topbar-toggle';
+
+let unsubscribe: (() => void) | null = null;
 
 function applyStyle(el: HTMLElement, enabled: boolean): void {
   Object.assign(el.style, {
@@ -16,7 +19,9 @@ function applyStyle(el: HTMLElement, enabled: boolean): void {
   el.textContent = enabled ? '🔔' : '🔕';
 }
 
-export function injectTopBarToggle(enabled: boolean): boolean {
+export function injectTopBarToggle(enabledArg?: boolean): boolean {
+  const enabled = enabledArg ?? getToggleEnabled();
+
   const existing = document.getElementById(TOGGLE_ID);
   if (existing) {
     applyStyle(existing as HTMLElement, enabled);
@@ -31,8 +36,15 @@ export function injectTopBarToggle(enabled: boolean): boolean {
   el.type = 'button';
   el.title = 'Toggle bullet buzzer';
   applyStyle(el, enabled);
+  el.addEventListener('click', () => {
+    setToggleEnabled(!getToggleEnabled());
+  });
 
   bell.parentElement.insertBefore(el, bell);
+
+  unsubscribe?.();
+  unsubscribe = subscribeToggle((v) => setTopBarToggleState(v));
+
   return true;
 }
 
@@ -43,4 +55,6 @@ export function setTopBarToggleState(enabled: boolean): void {
 
 export function removeTopBarToggle(): void {
   document.getElementById(TOGGLE_ID)?.remove();
+  unsubscribe?.();
+  unsubscribe = null;
 }
