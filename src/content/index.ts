@@ -1,7 +1,6 @@
 import { initAudio, playBeepSequence, cancelBeepSequence, playEndSound } from './audioManager';
 import { startTurnObserver, stopTurnObserver, ensureTurnObserver } from './turnDetector';
 import { startGameEndObserver, stopGameEndObserver } from './gameEndDetector';
-import { injectToggleButton, removeToggleButton } from './toggleUI';
 import { injectTopBarToggle } from './topBarToggle';
 import { getToggleEnabled, subscribeToggle } from './toggleState';
 import { CLOCK_BOTTOM_CONTAINER } from './selectors';
@@ -42,10 +41,8 @@ function setupPageObserver(): void {
 
     const clockExists = document.querySelector(CLOCK_BOTTOM_CONTAINER) !== null;
     if (clockExists) {
-      injectToggleButton();
       ensureTurnObserver();
     } else {
-      removeToggleButton();
       stopTurnObserver();
       cancelBeepSequence();
     }
@@ -61,7 +58,6 @@ function init(): void {
   initAudio();
   subscribeToggle(applyEnabledState);
   injectTopBarToggle();
-  injectToggleButton();
   if (getToggleEnabled()) {
     applyEnabledState(true);
   }
