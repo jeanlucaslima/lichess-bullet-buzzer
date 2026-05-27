@@ -1,5 +1,5 @@
 import { initAudio, playBeepSequence, cancelBeepSequence } from './audioManager';
-import { startTurnObserver, stopTurnObserver } from './turnDetector';
+import { startTurnObserver, stopTurnObserver, ensureTurnObserver } from './turnDetector';
 import { injectToggleButton, removeToggleButton, isToggleEnabled } from './toggleUI';
 import { CLOCK_BOTTOM_CONTAINER } from './selectors';
 
@@ -39,6 +39,7 @@ function setupPageObserver(): void {
 
     if (clockExists) {
       tryInjectUI();
+      ensureTurnObserver();
     } else {
       // Game ended or navigated away
       removeToggleButton();
