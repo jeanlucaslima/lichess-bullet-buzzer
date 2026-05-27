@@ -1,5 +1,6 @@
 import { initAudio, playBeepSequence, cancelBeepSequence } from './audioManager';
 import { startTurnObserver, stopTurnObserver, ensureTurnObserver } from './turnDetector';
+import { startGameEndObserver, stopGameEndObserver } from './gameEndDetector';
 import { injectToggleButton, removeToggleButton, isToggleEnabled } from './toggleUI';
 import { CLOCK_BOTTOM_CONTAINER } from './selectors';
 
@@ -15,11 +16,17 @@ function handleTurnEnd(): void {
   cancelBeepSequence();
 }
 
+function handleGameEnd(): void {
+  console.debug('[bullet-buzzer] game end detected');
+}
+
 function handleToggle(enabled: boolean): void {
   if (enabled) {
     startTurnObserver(handleTurnStart, handleTurnEnd);
+    startGameEndObserver(handleGameEnd);
   } else {
     stopTurnObserver();
+    stopGameEndObserver();
     cancelBeepSequence();
   }
 }
