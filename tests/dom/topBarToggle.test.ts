@@ -5,6 +5,7 @@ import { resolve } from "node:path";
 import {
   injectTopBarToggle,
   removeTopBarToggle,
+  setTopBarToggleState,
   TOGGLE_ID,
 } from "../../src/content/topBarToggle";
 
@@ -20,7 +21,7 @@ describe("topBarToggle", () => {
   });
 
   it("injects the toggle as a sibling preceding the notify bell", () => {
-    const ok = injectTopBarToggle();
+    const ok = injectTopBarToggle(true);
     expect(ok).toBe(true);
 
     const toggle = document.getElementById(TOGGLE_ID);
@@ -30,15 +31,25 @@ describe("topBarToggle", () => {
   });
 
   it("does not double-inject on repeated calls", () => {
-    injectTopBarToggle();
-    injectTopBarToggle();
-    injectTopBarToggle();
+    injectTopBarToggle(true);
+    injectTopBarToggle(true);
+    injectTopBarToggle(true);
 
     expect(document.querySelectorAll(`#${TOGGLE_ID}`).length).toBe(1);
   });
 
   it("returns false when the notify bell is not present", () => {
     document.body.innerHTML = "<header></header>";
-    expect(injectTopBarToggle()).toBe(false);
+    expect(injectTopBarToggle(true)).toBe(false);
+  });
+
+  it("reflects enabled state in textContent and color", () => {
+    injectTopBarToggle(true);
+    let toggle = document.getElementById(TOGGLE_ID) as HTMLElement;
+    expect(toggle.textContent).toBe("🔔");
+
+    setTopBarToggleState(false);
+    toggle = document.getElementById(TOGGLE_ID) as HTMLElement;
+    expect(toggle.textContent).toBe("🔕");
   });
 });
