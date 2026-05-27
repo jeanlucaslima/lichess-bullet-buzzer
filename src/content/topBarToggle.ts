@@ -7,16 +7,23 @@ let unsubscribe: (() => void) | null = null;
 
 function applyStyle(el: HTMLElement, enabled: boolean): void {
   Object.assign(el.style, {
+    display: 'inline-flex',
+    alignItems: 'center',
+    justifyContent: 'center',
     background: 'none',
     border: 'none',
     cursor: 'pointer',
-    padding: '0 6px',
-    fontSize: '18px',
+    padding: '0',
+    margin: '0',
+    width: '2em',
+    height: '100%',
+    fontSize: '14px',
     lineHeight: '1',
-    opacity: enabled ? '1' : '0.45',
-    color: enabled ? '#629924' : 'inherit',
+    verticalAlign: 'middle',
+    opacity: enabled ? '1' : '0.5',
+    color: enabled ? '#629924' : 'currentColor',
   });
-  el.textContent = enabled ? '🔔' : '🔕';
+  el.textContent = enabled ? 'ON' : 'off';
 }
 
 export function injectTopBarToggle(enabledArg?: boolean): boolean {

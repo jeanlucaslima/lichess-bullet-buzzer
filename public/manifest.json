@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
   "name": "Lichess Bullet Buzzer",
-  "version": "0.2.1",
+  "version": "0.2.2",
   "description": "Beeps at 1s, 2s, and 3s on your turn to train bullet response time.",
   "content_scripts": [
     {

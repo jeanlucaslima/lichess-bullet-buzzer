@@ -59,10 +59,10 @@ describe("topBarToggle", () => {
   it("reflects enabled state in textContent and color", () => {
     injectTopBarToggle(true);
     let toggle = document.getElementById(TOGGLE_ID) as HTMLElement;
-    expect(toggle.textContent).toBe("🔔");
+    expect(toggle.textContent).toBe("ON");
 
     setTopBarToggleState(false);
     toggle = document.getElementById(TOGGLE_ID) as HTMLElement;
-    expect(toggle.textContent).toBe("🔕");
+    expect(toggle.textContent).toBe("off");
   });
 });
