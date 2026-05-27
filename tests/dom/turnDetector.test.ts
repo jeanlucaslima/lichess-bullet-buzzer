@@ -81,6 +81,27 @@ describe("turnDetector", () => {
     expect(starts).toBe(1);
   });
 
+  it("fires immediately when starting with running class already present (White's first move)", async () => {
+    const bottom = document.querySelector(".rclock-bottom")!;
+    bottom.classList.add("running");
+
+    startTurnObserver(() => starts++, () => ends++);
+
+    expect(starts).toBe(1);
+  });
+
+  it("stopTurnObserver clears callbacks; ensure becomes a no-op", async () => {
+    startTurnObserver(() => starts++, () => ends++);
+    stopTurnObserver();
+
+    const bottom = document.querySelector(".rclock-bottom")!;
+    bottom.classList.add("running");
+    ensureTurnObserver();
+    await flush();
+
+    expect(starts).toBe(0);
+  });
+
   it("ensureTurnObserver is a no-op when element unchanged", async () => {
     startTurnObserver(() => starts++, () => ends++);
     ensureTurnObserver();
